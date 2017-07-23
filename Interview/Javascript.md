@@ -24,7 +24,8 @@ The standard DOM Events describes 3 phases of event propagation:
   * Capturing phase – the event goes down to the element.   
   * Target phase – the event reached the target element.   
   * Bubbling phase – the event bubbles up from the element.   
- ### Event Bubbling
+
+#### Event Bubbling
  When an event happens on an element, it first runs the handlers on it, then on its parent, then all the way up on other ancestors.
  below are 3 nested elements FORM > DIV > P with a handler on each of them:
 
@@ -43,8 +44,15 @@ The standard DOM Events describes 3 phases of event propagation:
   </form>
   ```
 
-So if we click on <p>, then we’ll see 3 alerts: p → div → form.
-The process is called “bubbling”, because events “bubble” from the inner element up through parents like a bubble in the water.
+So if we click on `<p>`, then we’ll see 3 alerts: p → div → form.
+The process is called 'bubbling', because events “bubble” from the inner element up through parents like a bubble in the water.
+#### event.target
+A handler on a parent element can always get the details about where it actually happened.The most deeply nested element that caused the event is called a target element, accessible as event.target.
+
+#### Event Capturing
+There’s another phase of event processing called “capturing”. It is rarely used in real code, but sometimes can be useful.
+
+![Image](./images/eventflow.png)
 
 ## Explain how this works in JavaScript
 `This` refers to itself, to its won object or global object.Using `this` are partitioned in 3 locations of code:
@@ -366,6 +374,66 @@ Send data to a server - in the background
  While javascript is secure and has been heavily used by websites for a long period of time, a percentage of website surfers prefer to turn javascript functionality off on their browser rendering the AJAX application useless, a work around to this con is present as well, where the developer will need to code a parallel non-javascript version of the dynamic web page to cater to these users.
 
 ## Explain how JSONP works (and how it's not really Ajax).
+You’ll be disappointed to hear that the new-and-exciting technology that is fundamental to JSONP is nothing more than the bog-standard `<script>` tag.
+
+The difference between a JSON response and a JSONP response, is that the JSONP response is formulated such that the response object is passed as an argument to a callback function.
+
+JSON:
+```javascript
+{
+    "bar": "baz"
+}
+```
+JSONP:
+```javascript
+foo({
+    "bar": "baz"
+});
+```
+This is why you see JSONP requests containing the "callback" parameter; so the server knows the name of the function to wrap the response around.
+
+This function must exist in the global scope at the time the `<script>` tag is evaluated by the browser (once the request has completed).
+
+* Same-origin policy
+The same-origin policy restricts how a document or script loaded from one origin can interact with a resource from another origin. It is a critical security mechanism for isolating potentially malicious documents.
+
+
+* Definition of an origin
+Two pages have the same origin if the protocol, port (if one is specified), and host are the same for both pages. The following table gives examples of origin comparisons to the URL http://store.company.com/dir/page.html:  
+
+<table>
+    <tr>
+        <td>URL</td>
+        <td>Outcome</td>
+        <td>Reason</td>
+    </tr>
+    <tr>
+        <td>http://store.company.com/dir2/other.html</td>
+        <td>Success</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>http://store.company.com/dir/inner/another.html</td>
+        <td>Success</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>https://store.company.com/secure.html</td>
+        <td>Failure</td>
+        <td>Different protocol</td>
+    </tr>
+    <tr>
+        <td>http://store.company.com:81/dir/etc.html</td>
+        <td>Failure</td>
+        <td>Different port</td>
+    </tr>
+    <tr>
+        <td>http://news.company.com/dir/other.html</td>
+        <td>Failure</td>
+        <td>Different host</td>
+    </tr>
+</table>
+
 ## Have you ever used JavaScript templating? If so, what libraries have you used?
 JavaScript templating refers to the client side data binding method implemented with the JavaScript language. This approach became popular thanks to JavaScript's increased use, its increase in client processing capabilities, and the trend to outsource computations to the client's web browser. Popular JavaScript templating libraries are `AngularJS`, `Backbone.js`, `Ember.js`, `Handlebars.js`, `Vue.js` and `Mustache.js`. A frequent practice is to use double curly brackets (i.e. {{key}}) to call values of the given key from data files, often JSON objects.
 
@@ -447,17 +515,224 @@ Because of this, we can use variables before we declare them. However, we have t
 ## Describe event bubbling.
 ## What's the difference between an "attribute" and a "property"?
 ## Why is extending built-in JavaScript objects not a good idea?
+Same as other language, JS have built-in objects that create the essential functionality of language.  These objects provide some of the core functionality for working with text, numbers, collections of data, dates, and a whole lot more.
+
+JS has 17 built-in objects. Following are lists of built-in javascript object defined by ECMA-262   
+
+![built-in Javascript list](./images/built-in.jpg)
+
+We can extend built-in object by using prototype functions:
+``` javascript
+if (!Array.prototype.forEach) {
+  Array.prototype.forEach = function(fn){
+    for ( var i = 0; i < this.length; i++ ) {
+      fn( this[i], i, this );
+    }
+  };
+}
+["a", "b", "c"].forEach(function(value, index, array){
+  console.log( value, "Is in position " + index + " out of " + (array.length - 1) );
+});
+```
+*** Why is not a good idea to extending built-in Javascript:***   
+1. if, in future, a browser decides to implement its own version of your method, your method might get overridden (silently) and the browser’s implementation (which is probably different from yours) would take over. So not extending in the first place is future proofing your code.
+2.  On the flip side, if you decide to overwrite the browsers definition, any future developer working on your code won’t know about the change.
+
+*** a good usage to extending built-in Javascript ***   
+1. Don’t modify objects you don’t own。
+2. The only good reason for extending a built-in prototype is to backport the features of newer JavaScript engines; for example Array.forEach, etc.
+
+>  ** Questions:
+Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it? **
+
+    function badlyScoped() {
+        globalVariable = "I'm a global variable";
+    }
+
+    badlyScoped();
+    console.log(globalVariable);
+    globalVariable = "I'm refreshed"
+    console.log(globalVariable);
+    badlyScoped();
+    console.log(globalVariable);
+
+1. It’s harder to read the code and reason about it when variables seem to appear out of thin air (but really from the global scope).
+2. Anyone can update a global variable from any point in the program at any time (and from any thread if there’s more than one going).
+General code smell - if you're too lazy to put the variable only where it needs to be then what other corners are you cutting?
+3. It’s probable that you'll encounter global variable name clashes. Since there’s only one namespace you're more likely to double up on a variable name.
+
 ## Difference between document load event and document DOMContentLoaded event?
+- #### DOMContentLoaded
+  The DOMContentLoaded event is fired when the document has been completelyloaded and parsed, without waiting for stylesheets, images, and subframes to finish loading (the load event can be used to detect a fully-loaded page)
+
+  ```javascript
+  document.addEventListener("DOMContentLoaded", function(e) {
+    console.log("The DOM has finished loading.");
+  });
+```
+
+- #### Load
+  The load event as distinct from DOMContentLoaded only fires once the DOM and all associated resources (like CSS files, JS files, images, external resources, etc.) have all finished loading. This would be the measure of your apps page speed when using Google Insights for example.
+
+  ```javascript
+  document.addEventListener("load", function(e) {
+    console.log("The page has completely loaded.");
+  });
+```
+
 ## What is the difference between == and ===?
+`===` refers strict equity comparison
+  * Neither value is converted   
+  * Variable type must match   
+
+``` javascript
+var num = 0;
+var obj = new String("0");
+var str = "0";
+var b = false;
+
+console.log(num === num); // true
+console.log(obj === obj); // true
+console.log(str === str); // true
+
+console.log(num === obj); // false
+console.log(num === str); // false
+console.log(obj === str); // false
+console.log(null === undefined); // false
+console.log(obj === null); // false
+console.log(obj === undefined); // false
+```
+
+
+`==`  refers lose(Abstract) equality Comparison
+  * Both values converted to common type
+  * Variable type less important
+
+``` javascript
+var num = 0;
+var obj = new String("0");
+var str = "0";
+var b = false;
+
+console.log(num == num); // true
+console.log(obj == obj); // true
+console.log(str == str); // true
+
+console.log(num == obj); // true
+console.log(num == str); // true
+console.log(obj == str); // true
+console.log(null == undefined); // true
+
+// both false, except in rare cases
+console.log(obj == null);
+console.log(obj == undefined);
+```
+The equality comparison is performed as follows for operands of the various types:   
+
+![implicityConvert](./images/implicityConvert.png)
+
 ## Explain the same-origin policy with regards to JavaScript.
 ## Make this work:
 ## duplicate([1,2,3,4,5]); // [1,2,3,4,5,1,2,3,4,5]
+**Array.prototype.concat()**   
+The concat() method is used to merge two or more arrays. This method does not change the existing arrays, but instead returns a new array.
+``` javascript
+var arr1 = ['a', 'b', 'c'];
+var arr2 = ['d', 'e', 'f'];
+var arr3 = arr1.concat(arr2);
+// arr3 is a new array [ "a", "b", "c", "d", "e", "f" ]
+```
+*** Using Array.concat to solve questions: ***
+``` javascript
+var arr1 = [1,2,3,4,5];
+var arr2 = arr1.concat(arr1);
+console.log(arr2); // [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+```
+
 ## Why is it called a Ternary expression, what does the word "Ternary" indicate?
+It is frequently used as a shortcut for the if statement.
+
+** condition ? expr1 : expr2 **
+
+- condition  
+An expression that evaluates to true or false.  
+
+- expr1, expr2  
+Expressions with values of any type.  
+
+```javascript
+var permission = age > 18 ? (
+    true
+) : (
+    false
+)
+
+if (age > 18) {
+    permission = true
+} else {
+    permission = false
+}
+```
 ## What is "use strict";? what are the advantages and disadvantages to using it?
 ## Create a for loop that iterates up to 100 while outputting "fizz" at multiples of 3, "buzz" at multiples of 5 and "fizzbuzz" at multiples of 3 and 5
 ## Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it?
 ## Why would you use something like the load event? Does this event have disadvantages? Do you know any alternatives, and why would you use those?
+The lifecycle of an HTML page has three important events:
+- DOMContentLoaded – the browser fully loaded HTML, and the DOM tree is built, but external resources like pictures <img> and stylesheets may be not yet loaded.
+- load – the browser loaded all resources (images, styles etc).
+- beforeunload/unload – when the user is leaving the page.   
+
+load event on window triggers when the page and all resources are loaded. We rarely use it, because there’s usually no need to wait for so long.
+``` sh
+<script>
+  window.addEventListener("load", function(event) {
+    console.log("All resources finished loading!");
+  });
+</script>
+
+ref https://developer.mozilla.org/en-US/docs/Web/Events/load
+```
+
+window.load can take a VERY long time to occur. It doesn't just wait for the DOM to be prepared but also the complete loading of every stylesheet, script, image and other asset referenced on your page.
+Especially in contexts where there are a lot of scripts or a lot of images involved. Most of our code doesn't need to wait for either of these things to occur. Most javascript is just defining functions and variables. The only thing that really needs to wait for window.load is code that deals with positioning
+
 ## Explain what a single page app is and how to make one SEO-friendly.
+- #### Single page app  
+  The term “single-page application” (or SPA) is usually used to describe applications that were built for the web. These applications are accessed via a web browser like other websites, but offer more dynamic interactions resembling native mobile and desktop apps.The most notable difference between a regular website and an SPA is the reduced amount of page refreshes.
+
+  ![spa](./images/spa.png)   
+  In a traditional Web app, every time the app calls the server, the server renders a new HTML page. This triggers a page refresh in the browser.    
+
+  In an SPA, either all necessary code – HTML, JavaScript, and CSS – is retrieved with a single page load, or the appropriate resources are dynamically loaded and added to the page as necessary, usually in response to user actions.
+  The page does not reload at any point in the process, nor does control transfer to another page, although the location hash or the HTML5 History API can be used to provide the perception and navigability of separate logical pages in the application.
+
+  After the first page loads, all interaction with the server happens through AJAX calls. These AJAX calls return data—not markup—usually in JSON format.
+
+  Popular JavaScript Frameworks for Building SPAs:   
+  Angular | React | Ember | Aurelia | Vue.js | Cycle.js | Backbone
+
+- #### Pros of the Single-Page Application:
+   - SPA is fast, as most resources (HTML+CSS+Scripts) are only loaded once throughout the lifespan of application. Only data is transmitted back and forth.
+   - The development is simplified and streamlined. There is no need to write code to render pages on the server.
+   - It’s easier to make a mobile application because the developer can reuse the same backend code for web application and native mobile application.
+
+- #### Cons of the Single-Page Application:
+   - It is very tricky and not an easy task to make SEO optimization of a Single-Page Application. Its content is loaded by AJAX (Asynchronous JavaScript and XML) — a method of exchanging data and updating in the application without refreshing the page.
+   - It is slow to download because heavy client frameworks are required to be loaded to the client.
+   - It requires JavaScript to be present and enabled. If any user disables JavaScript in his or her browser, it won’t be possible to present application and its actions in a correct way.
+   - Compared to the “traditional” application, SPA is less secure. Due to Cross-Site Scripting (XSS), it enables attackers to inject client-side scripts into web application by other users.
+   - Memory leak in JavaScript can even cause powerful system to slow down
+
+- #### SEO Friendly  
+  SEO issues for SAP:
+  Google's indexing crawlers have traditionally ignored content that is served by javascript. Google considers a single web page as a unique block of content with semantically valid html that corresponds to a unique URL. This makes the page worthy of indexing and, subsequently, ranking. The classic issue with SPAs is that the content on the page changes without the web url changing accordingly.   
+  How to change:   
+  BUILDING SITEMAP.XML：   
+  The Sitemaps protocol allows us to inform search engines about pages on our website that are available for crawling. A Sitemap is an xml file that lists URLs for a site. There you can specify information about each page: last update time, change frequency, and how important it is in relation to other URLs on the site. Search engine web crawlers like Googlebot read this file to more intelligently crawl your site.     
+  Create a list of all content you want indexed on the site (Render HTML in the server)
+    - AngularJS: http://blog.angular-university.io/angular-2-universal-meet-the-internet-of-the-future-seo-friendly-single-page-web-apps/
+    - React: http://redux.js.org/docs/recipes/ServerRendering.html
+
 ## What is the extent of your experience with Promises and/or their polyfills?
 ## What are the pros and cons of using Promises instead of callbacks?
 ## What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?
@@ -469,6 +744,84 @@ Because of this, we can use variables before we declare them. However, we have t
 ## How can you achieve immutability in your own code?
 ## Explain the difference between synchronous and asynchronous functions.
 ## What is event loop?
+![Image](./images/event.png)
+
+
+**macrotasks:** setTimeout, setInterval, setImmediate, I/O, UI rendering
+**microtasks:** process.nextTick, Promises, Object.observe, MutationObserver
+
+One go-around of the event loop will have exactly one task being processed from the `macrotask queue` (this queue is simply called the task queue in the WHATWG specification). After this macrotask has finished, all available `microtasks` will be processed, namely within the same go-around cycle. While these microtasks are processed, they can queue even more microtasks, which will all be run one by one, until the microtask queue is exhausted.
+
+There is an inbuilt protection against such blocking by means of process.maxTickDepth. This value is set to a default of 1000, cutting down further processing of microtasks after this limit is reached which allows the next macrotask to be processed
+
+Examples:
+
+```javascript
+var promise = new Promise(function(resolve, reject) {resolve(1)});
+promise.then(function(resolve) {console.log(1)});
+console.log('a');
+promise.then(function(resolve) {console.log(2);});
+setTimeout(function() {console.log('h')}, 0);
+promise.then(function(resolve) {console.log(3)});
+console.log('b');
+
+// a
+// b
+// 1
+// 2
+// 3
+// h
+```
+
+
+
+```javascript
+console.log('script start')
+
+const interval = setInterval(() => {  
+  console.log('setInterval')
+}, 0)
+
+setTimeout(() => {  
+  console.log('setTimeout 1')
+  Promise.resolve().then(() => {
+    console.log('promise 3')
+  }).then(() => {
+    console.log('promise 4')
+  }).then(() => {
+    setTimeout(() => {
+      console.log('setTimeout 2')
+      Promise.resolve().then(() => {
+        console.log('promise 5')
+      }).then(() => {
+        console.log('promise 6')
+      }).then(() => {
+        clearInterval(interval)
+      })
+    }, 0)
+  })
+}, 0)
+
+Promise.resolve().then(() => {  
+  console.log('promise 1')
+}).then(() => {
+  console.log('promise 2')
+})
+
+// script start
+// promise1
+// promise2
+// setInterval
+// setTimeout1
+// promise3
+// promise4
+// setInterval
+// setTimeout2
+// setInterval
+// promise5
+// promise6
+```
+
 ## What is the difference between call stack and task queue?
 ## Explain the differences on the usage of foo between function foo() {} and var foo = function() {}
 - #### Function Declarations
@@ -505,3 +858,87 @@ Because of this, we can use variables before we declare them. However, we have t
   result = foo(); // --> Error: foo is not a function
   foo = function() {};
   ```
+- #### Function constructor
+  ```javascript
+  var myPerson = new Person();
+  ```
+  Such a syntax declaration is used when creating an instance of a Class(Constructor). Here, we pass in an unlimited number of arguments in the front and use the keyword “new”.
+
+  ```javascript
+  function Test(test) {  
+      test.name = 'Test';  
+  　　return test.name;  //return test;
+  }  
+  var arg1={};
+  var arg2={};   
+  var fnT = Test(arg1);  
+  var newT = new Test(arg2);  
+  alert(fnT == newT);
+  console.log(fnT);
+  console.log(newT);
+
+  ```
+
+## What does the following code print?
+```javascript
+console.log('one');
+setTimeout(function() {
+  console.log('two');
+}, 0);
+console.log('three');
+```
+
+
+
+>one
+>three
+>two
+
+
+The window object allows execution of code at specified time intervals.
+These time intervals are called timing events.
+The two key methods to use with JavaScript are:
+
+* setTimeout(function, milliseconds)
+Executes a function, after waiting a specified number of milliseconds.
+
+* setInterval(function, milliseconds)
+Same as setTimeout(), but repeats the execution of the function continuously.
+
+**Stop the Execution**
+
+
+```javascript
+myVar = setTimeout(function, milliseconds);
+clearTimeout(myVar);
+```
+
+Examples:
+Using setTimeout to create a clock in a wrong way.
+
+```javascript
+<html>
+<head>
+<script>
+x=0
+function count( )
+{　x = x + 1
+　 document.display.box.value= x
+　 timeoutID=setTimeout("count()", 1000)
+}
+</script>
+</head>
+<body bgcolor=lightcyantext=red>
+<p> </br>
+<form name=display>
+<input type="text" name="box"value="0" size=4 >
+<input type=button value="Stop" onClick="clearTimeout(timeoutID) " >
+<input type=button value="Continue" onClick="count( ) " >
+</form> <p>
+
+<script>
+count( )
+</script>
+</body>
+</html>
+```
