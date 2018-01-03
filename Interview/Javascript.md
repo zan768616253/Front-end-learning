@@ -1,3 +1,6 @@
+## Can you name two programming paradigms important for JavaScript app developers.
+JavaScript is a multi-paradigm language, supporting **imperative/procedural** programming along with **OOP** (Object-Oriented Programming) and **functional programming**. JavaScript supports OOP with **prototypal inheritance**.
+
 ## Explain event delegation
 Event propagation and bubbling :(http://javascript.info/bubbling-and-capturing)
 Event delegation allows you to avoid adding event listeners to specific nodes. Instead, the event listener is added to one parent.
