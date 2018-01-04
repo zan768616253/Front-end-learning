@@ -101,10 +101,66 @@ eval is a function which evaluates a string as though it were an expression and 
     * if `eval()` is called directly, `this` remains the same as in surroundings of `eval()`.
 
 ## Explain how prototypal inheritance works
-## What do you think of AMD vs CommonJS?
-## Explain why the following doesn't work as an IIFE: function foo(){ }();.
+```JavaScript
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+}
+Rectangle.prototype.area = function() {
+  return this.width * this.height;
+}
+function Square(length) {
+  this.width = this.height = length;
+}
+Square.prototype = Object.create(Rectangle.prototype);
+var square = new Square(4);
+console.log(square.area());
+```
 
-## What needs to be changed to properly make it an IIFE?
+## What do you think of AMD vs CommonJS vs ES6?
+Asynchronous Module Definition (AMD) was born out of a group of developers that were displeased with the direction adopted by CommonJS. In fact, AMD was split from CommonJS early in its development. The main difference between AMD and CommonJS lies in its support for asynchronous module loading.
+- PROS
+  - Asynchronous loading (better startup times).
+  - Circular dependencies are supported.
+  - Compatibility for require and exports.
+  - Dependency management fully integrated.
+  - Modules can be split in multiple files if necessary.
+  - Constructor functions are supported.
+  - Plugin support (custom loading steps).
+- CONS
+  - Slightly more complex syntactically.
+  - Loader libraries are required unless transpiled.
+  - Hard to analyze for static code analyzers.
+- Implementations
+  - require.js and Dojo.
+
+CommonJS modules were designed with server development in mind. Naturally, the API is synchronous. In other words, modules are loaded at the moment and in the order they are required inside a source file.
+- PROS
+  - Simple: a developer can grasp the concept without looking at the docs.
+  - Dependency management is integrated: modules require other modules and get loaded in the needed order.
+  - require can be called anywhere: modules can be loaded programmatically.
+  - Circular dependencies are supported.
+- CONS
+  - Synchronous API makes it not suitable for certain uses (client-side).
+  - One file per module.
+  - Browsers require a loader library or transpiling.
+  - No constructor function for modules (Node supports this though).
+  - Hard to analyze for static code analyzers.
+- Implementations
+  - NodeJS.
+  - For the client there are currently two popular options: webpack and browserify.
+
+ES6
+- PROS
+  - Synchronous and asynchronous loading supported.
+  - Syntactically simple.
+  - Support for static analysis tools.
+  - Integrated in the language (eventually supported everywhere, no need for libraries).
+  - Circular dependencies supported.
+- CONS
+  - Still not supported everywhere.
+
+## Explain why the following doesn't work as an IIFE: `function foo(){ }();`? What needs to be changed to properly make it an IIFE?
 - #### What is Immediately Invoked Function Expressions(IIFE)
 An IIFE is an anonymous function that is created and then immediately invoked. It’s not called from anywhere else, but runs just after being created.   
 Example:
@@ -167,7 +223,7 @@ because this function is defined with Normal function definition and not been ca
 
 - `undeclared`: A variable is undeclared when it does not sue the `var` keyword. undeclared variables do not exist until code assigning them is executed. Therefore, assigning a value to an undeclared variable implicitly creates it as a global variable when the assignment is executed. This means that, all undeclared variables are global variables.   
 
-  ```javascript
+```javascript
   function hoist() {
     a = 20;
     var b = 100;
@@ -187,23 +243,21 @@ because this function is defined with Normal function definition and not been ca
   */
 ```
 
-## How would you go about checking for any of these states?
 ## What is a closure, and how/why would you use one?
 Closures are functions that refer to independent (free) variables (variables that are used locally, but defined in an enclosing scope). In other words, these functions 'remember' the environment in which they were created.
-
-
-
 ```javascript
 function f1(){
-　　　　var n=999;
-　　　　function f2(){
-　　　　　　alert(n);
-　　　　}
-　　　　return f2;
-　　}
-　　var result=f1();
-　　result(); // 999
+  var n=999;
+　function f2(){
+　　　alert(n);
+　}
+　return f2;
+}
+var result=f1();
+result(); // 999
 ```
+Disadvantage: As long as closures are active, this memory cannot be garbage collected. Therefore, closures can lead to memory leaks if not used well.
+
 ## What's a typical use case for anonymous functions?
 - #### what's anonymous functions?  
   An anonymous function is a function that was declared without any named identifier to refer to it. As such, an anonymous function is usually not accessible after its initial creation.
@@ -225,15 +279,15 @@ function f1(){
 One common use for anonymous functions is as arguments to other functions. Another common use is as a closure.   
 example:
 ``` javascript
-     function takesACallback(callback) {
-      return "The callback says: " + callback();
-     }
+   function takesACallback(callback) {
+    return "The callback says: " + callback();
+   }
 
-    takesACallback(function() {
-        return "I'm the callback!";
-      }); // returns "The callback says: I'm the callback!"
+  takesACallback(function() {
+      return "I'm the callback!";
+    }); // returns "The callback says: I'm the callback!"
  ```
-## How do you organize your code? (module pattern, classical inheritance?)
+
 ## What's the difference between host objects and native objects?
 - #### What's native object
     > Native objects are inherent to JS - they are available to you so long as you're using JS. The native objects are sometimes referred to as “global objects” since they are the objects that JavaScript has made natively available for use.  
@@ -244,7 +298,10 @@ example:
   >Host object includes Everything the environment gives you. Host objects can differ by environment (or host).   
   Example, browser environment supplies objects such as window. While a node.js/server environment supplies objects such as NodeList.
 
-## Difference between: function Person(){}, var person = Person(), and var person = new Person()?
+## Difference between: `function Person(){}, var person = Person()`, and `var person = new Person()`?
+`var person = Person()` is calling function `Person` and set the result to variable `person`;
+`var person = new Person()` is creating an instance of `Person`.
+
 ## What's the difference between .call and .apply?
 The difference between call and apply. Both can be called on functions, which they run in the context of the first argument. In call the subsequent arguments are passed in to the function as they are, while apply expects the second argument to be an array that it unpacks as arguments for the called function.
 
@@ -283,7 +340,8 @@ document.write("<h1>Test comment！</h1>");
 ```
 >mostly works like alert function
 
-Definition and Usage
+- Definition and Usage
+
 The write() method writes HTML expressions or JavaScript code to a document.
 
 The write() method is mostly used for testing: If it is used after an HTML document is fully loaded, it will delete all existing HTML.
@@ -323,9 +381,28 @@ It also can be used in initialize a new window with document.close().
   </form>
 </body>
 ```
+
 ## What's the difference between feature detection, feature inference, and using the UA string?
-## Explain Ajax in as much detail as possible.
-## What are the advantages and disadvantages of using Ajax?
+Feature detection checks a feature for existence, e.g.:
+```JavaScript
+if (window.XMLHttpRequest) {
+    new XMLHttpRequest();
+}
+```
+Feature inference checks for a feature just like feature detection, but uses another function because it assumes it will also exist, e.g.:
+```JavaScript
+if (document.getElementsByTagName) {
+    element = document.getElementById(id);
+}
+```
+Checking the UA string is an old practice and should not be used anymore. Serving different Web pages or services to different browsers is usually a bad idea. The Web is meant to be accessible to everyone, regardless of which browser or device they're using. There are ways to develop your website to progressively enhance itself based on the availability of features rather than by targeting specific browsers. e.g.:
+```JavaScript
+if (navigator.userAgent.indexOf("MSIE 7") > -1){
+    //do something
+}
+```
+
+## Explain Ajax in as much detail as possible. What are the advantages and disadvantages of using Ajax?
 AJAX = Asynchronous JavaScript And XML.
 
 AJAX is not a programming language.
@@ -515,8 +592,28 @@ Because of this, we can use variables before we declare them. However, we have t
   hoist(); // Ouput: Hoisting is all the rage!
   ```
 
-## Describe event bubbling.
-## What's the difference between an "attribute" and a "property"?
+## What's the difference between an "attribute" and a "property" of HTML?
+- Attributes are defined by HTML, all definitions inside HTML tag are attributes. The type of attributes is always string.
+
+```JavaScript
+<div id="test" class="button" custom-attr="1"></div>
+
+document.getElementById('test').attributes;
+// return: [custom-attr="hello", class="button", id="test"]
+```
+
+- Properties are defined by DOM, the nature of DOM is an object in JavaScript. We can get and set properties as we do to a normal object in JavaScript and properties can be any types.
+
+```JavaScript
+document.getElementById('test').foo = 1; // set property: foo to a number: 1
+document.getElementById('test').foo; // get property, return number: 1
+$('#test').prop('foo'); // read property using jQuery, return number: 1
+```
+
+Some HTML attributes have 1:1 mapping onto properties. id is one example of such. Some do not (e.g. the value attribute specifies the initial value of an input, but the value property specifies the current value).
+
+It is recommended to use **property** in JavaScript as it's much easier and faster. Especially for boolean type attributes like: "checked", "disabled" and "selected", browser automatically converts them into boolean type properties.
+
 ## Why is extending built-in JavaScript objects not a good idea?
 Same as other language, JS have built-in objects that create the essential functionality of language.  These objects provide some of the core functionality for working with text, numbers, collections of data, dates, and a whole lot more.
 
@@ -537,27 +634,29 @@ if (!Array.prototype.forEach) {
   console.log( value, "Is in position " + index + " out of " + (array.length - 1) );
 });
 ```
-*** Why is not a good idea to extending built-in Javascript:***   
+***Why is not a good idea to extending built-in Javascript:***   
 1. if, in future, a browser decides to implement its own version of your method, your method might get overridden (silently) and the browser’s implementation (which is probably different from yours) would take over. So not extending in the first place is future proofing your code.
 2.  On the flip side, if you decide to overwrite the browsers definition, any future developer working on your code won’t know about the change.
 
-*** a good usage to extending built-in Javascript ***   
+***a good usage to extending built-in Javascript***   
 1. Don’t modify objects you don’t own。
 2. The only good reason for extending a built-in prototype is to backport the features of newer JavaScript engines; for example Array.forEach, etc.
 
->  ** Questions:
-Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it? **
+>  **Questions:
+Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it?**
 
-    function badlyScoped() {
-        globalVariable = "I'm a global variable";
-    }
+```JavaScript
+function badlyScoped() {
+    globalVariable = "I'm a global variable";
+}
 
-    badlyScoped();
-    console.log(globalVariable);
-    globalVariable = "I'm refreshed"
-    console.log(globalVariable);
-    badlyScoped();
-    console.log(globalVariable);
+badlyScoped();
+console.log(globalVariable);
+globalVariable = "I'm refreshed"
+console.log(globalVariable);
+badlyScoped();
+console.log(globalVariable);
+```
 
 1. It’s harder to read the code and reason about it when variables seem to appear out of thin air (but really from the global scope).
 2. Anyone can update a global variable from any point in the program at any time (and from any thread if there’s more than one going).
@@ -565,23 +664,22 @@ General code smell - if you're too lazy to put the variable only where it needs 
 3. It’s probable that you'll encounter global variable name clashes. Since there’s only one namespace you're more likely to double up on a variable name.
 
 ## Difference between document load event and document DOMContentLoaded event?
-- #### DOMContentLoaded
-  The DOMContentLoaded event is fired when the document has been completelyloaded and parsed, without waiting for stylesheets, images, and subframes to finish loading (the load event can be used to detect a fully-loaded page)
+webpage load and execution sequence:
 
-  ```javascript
-  document.addEventListener("DOMContentLoaded", function(e) {
-    console.log("The DOM has finished loading.");
-  });
-```
+1. HTML is downloaded.
 
-- #### Load
-  The load event as distinct from DOMContentLoaded only fires once the DOM and all associated resources (like CSS files, JS files, images, external resources, etc.) have all finished loading. This would be the measure of your apps page speed when using Google Insights for example.
+2. HTML is parsed progressively. When a request for an asset is reached the browser will attempt to download the asset. A default configuration for most HTTP servers and most browsers is to process only two requests in parallel. IE can be reconfigured to downloaded an unlimited number of assets in parallel.
 
-  ```javascript
-  document.addEventListener("load", function(e) {
-    console.log("The page has completely loaded.");
-  });
-```
+3. Once the HTML is parsed the DOM is rendered. CSS is rendered in parallel to the rendering of the DOM in nearly all user agents. As a result it is strongly recommended to put all CSS code into external CSS files that are requested as high as possible in the <head></head> section of the document. Otherwise the page is rendered up to the occurance of the CSS request position in the DOM and then rendering starts over from the top.
+
+4. Only after the DOM is completely rendered and requests for all assets in the page are either resolved or time out does JavaScript execute from the `onload` event.
+
+
+The `DOMContentLoaded` event is fired when the document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading (the load event can be used to detect a fully-loaded page).
+
+When the browser initially loads HTML and comes across a `<script>...</script>` in the text, it can’t continue building DOM. It must execute the script right now. So `DOMContentLoaded` may only happen after all such scripts are executed. (External scripts (with `src`) also put DOM building to pause while the script is loading and executing. So DOMContentLoaded waits for external scripts as well. The only exception are external scripts with `async` and `defer` attributes. They tell the browser to continue processing without waiting for the scripts. So the user can see the page before scripts finish loading, good for performance.)
+
+The `load` event as distinct from `DOMContentLoaded` only fires once the DOM and all associated resources (like CSS files, JS files, images, external resources, etc.) have all finished loading. This would be the measure of your apps page speed when using Google Insights for example.
 
 ## What is the difference between == and ===?
 `===` refers strict equity comparison
@@ -606,7 +704,6 @@ console.log(obj === null); // false
 console.log(obj === undefined); // false
 ```
 
-
 `==`  refers lose(Abstract) equality Comparison
   * Both values converted to common type
   * Variable type less important
@@ -629,14 +726,18 @@ console.log(null == undefined); // true
 // both false, except in rare cases
 console.log(obj == null);
 console.log(obj == undefined);
+
+// boolean would be converted into number before comparing
+console.log(false == null); // false
+console.log(true == null); // false
+console.log(false == 0); // true
+console.log(true == 1); // true
 ```
-The equality comparison is performed as follows for operands of the various types:   
+The equality comparison is performed as follows for operands of the various types:
 
 ![implicityConvert](./images/implicityConvert.png)
 
-## Explain the same-origin policy with regards to JavaScript.
-## Make this work:
-## duplicate([1,2,3,4,5]); // [1,2,3,4,5,1,2,3,4,5]
+## Make this work: `duplicate([1,2,3,4,5]); // [1,2,3,4,5,1,2,3,4,5]`
 **Array.prototype.concat()**   
 The concat() method is used to merge two or more arrays. This method does not change the existing arrays, but instead returns a new array.
 ``` javascript
@@ -677,8 +778,27 @@ if (age > 18) {
 }
 ```
 ## What is "use strict";? what are the advantages and disadvantages to using it?
-## Create a for loop that iterates up to 100 while outputting "fizz" at multiples of 3, "buzz" at multiples of 5 and "fizzbuzz" at multiples of 3 and 5
-## Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it?
+Advantages:
+- It catches some common coding bloopers, throwing exceptions.
+- It prevents, or throws errors, when relatively “unsafe” actions are taken (such as gaining access to the global object).
+- It disables features that are confusing or poorly thought out.
+
+Disadvantages:
+- It will not allow us to use the “with” statement. This statement will causes security and performance problems.
+- It will not allow us to use the “arguments.caller” property, due to security concernsWe do not have an alternate to this property, but we can hard code an additional parameter.
+- No more octal numbers. Now 0100 really is 100 and not 64. And 08 is not an error, any more. I can’t imagine that anyone misses octals.
+- No more global access via this. Strict mode does not allow the below – `this` is `undefined` in non-method functions.
+  ```JavaScript
+  (function () {
+        // private data
+        ...
+        // public data
+        this.myModule = { // avoid!
+            ...
+        };
+    }());
+  ```
+
 ## Why would you use something like the load event? Does this event have disadvantages? Do you know any alternatives, and why would you use those?
 The lifecycle of an HTML page has three important events:
 - DOMContentLoaded – the browser fully loaded HTML, and the DOM tree is built, but external resources like pictures <img> and stylesheets may be not yet loaded.
@@ -736,10 +856,18 @@ Especially in contexts where there are a lot of scripts or a lot of images invol
     - AngularJS: http://blog.angular-university.io/angular-2-universal-meet-the-internet-of-the-future-seo-friendly-single-page-web-apps/
     - React: http://redux.js.org/docs/recipes/ServerRendering.html
 
-## What is the extent of your experience with Promises and/or their polyfills?
 ## What are the pros and cons of using Promises instead of callbacks?
-## What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?
-## What tools and techniques do you use debugging JavaScript code?
+- PROS:
+
+promises make more than one function to be called easier. Particular features are that:
+1. functions can be added anywhere in the code, subject only to the promise being within scope, and
+2. functions added after a Deferred/promise has been resolved/rejected will fire immediately.
+
+In short promises are perfect when you deal with multiple async calls in parallel.
+- CONS:
+
+The main advantage a callback has over a promise is locality.  With a callback you're asking for work to be performed in one place, and a result to be given very near the same so you can operate on it.  In situations where there is no actual data being handed back (think GCD's primitives) a callback is the only appropriate way to handle such an API.  Anything more would add needless complexity to a simple interface.
+
 ## What language constructions do you use for iterating over object properties and array items?
 ## Explain the difference between mutable and immutable objects.
 ## What is an example of an immutable object in JavaScript?
