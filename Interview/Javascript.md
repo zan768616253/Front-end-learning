@@ -868,17 +868,42 @@ In short promises are perfect when you deal with multiple async calls in paralle
 
 The main advantage a callback has over a promise is locality.  With a callback you're asking for work to be performed in one place, and a result to be given very near the same so you can operate on it.  In situations where there is no actual data being handed back (think GCD's primitives) a callback is the only appropriate way to handle such an API.  Anything more would add needless complexity to a simple interface.
 
-## What language constructions do you use for iterating over object properties and array items?
 ## Explain the difference between mutable and immutable objects.
+The text-book definition of mutability is liable or subject to change or alteration. In programming, we use the word to mean objects whose state is allowed to change over time. An immutable value is the exact opposite – after it has been created, it can never change.
+
 ## What is an example of an immutable object in JavaScript?
+Strings are not the only immutable values built into JavaScript. Numbers are immutable too.
+```JavaScript
+var statement = "I am an immutable value";
+var otherStr = statement.slice(8, 17);
+```
+In fact, no string methods change the string they operate on, they all return new strings. The reason is that strings are immutable – they cannot change, we can only ever make new strings.
+
 ## What are the pros and cons of immutability?
+PROS:
+ - Your data changes are more explicit.
+  ```JavaScript
+  var object = { x: 2, y: 4 };
+  performSomething(object);
+  object.x; // ?
+  object.y; // ?
+  ```
+  In fact, there is no way to know the values of `x` and `y` until you inspect the performSomething function itself. But with immutable approach you have more explicit way in code to mark that the code called changes data.
+
+CONS:
+  - It needs dependencies to make it right. (Immutable.js)
+  - It is less performant than mutable approach with small datasets.
+  - It needs a discipline thorough the team.
+
 ## How can you achieve immutability in your own code?
+`Object.assign()`, `lodash.cloneDeep()`
+
 ## Explain the difference between synchronous and asynchronous functions.
 ## What is event loop?
 ![Image](./images/event.png)
 
-
 **macrotasks:** setTimeout, setInterval, setImmediate, I/O, UI rendering
+
 **microtasks:** process.nextTick, Promises, Object.observe, MutationObserver
 
 One go-around of the event loop will have exactly one task being processed from the `macrotask queue` (this queue is simply called the task queue in the WHATWG specification). After this macrotask has finished, all available `microtasks` will be processed, namely within the same go-around cycle. While these microtasks are processed, they can queue even more microtasks, which will all be run one by one, until the microtask queue is exhausted.
@@ -953,7 +978,6 @@ Promise.resolve().then(() => {
 // promise6
 ```
 
-## What is the difference between call stack and task queue?
 ## Explain the differences on the usage of foo between function foo() {} and var foo = function() {}
 - #### Function Declarations
   ``` javascript
