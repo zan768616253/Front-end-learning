@@ -24,9 +24,9 @@ In summary, the steps of event delegation are:
  - When you find a matching element, set event.currentTarget to it and call subsequent handling code
 
 The standard DOM Events describes 3 phases of event propagation:   
-  * Capturing phase – the event goes down to the element.   
-  * Target phase – the event reached the target element.   
-  * Bubbling phase – the event bubbles up from the element.   
+- Capture: When you clicked, browser knows a click event occurred. It starts from the window (lowest level/root of your website), then goes to document, then html root tag, then body, then table... its trying to reach the the as lowest level of element as possible. This is called capture phase (phase-1).
+- Target: When browser reach the lowest level of element. In this case, you have clicked on a table cell (table data) hence target would be "td" tag. Then browser checks whether you have any click handler attached to this element. If there is any, browser executes that click hander. This is called target phase (phase-2).
+- Bubbling: After firing click hander attached to "td", browser walks toward root. One level upward and check whether there is any click handler attached with table row ("tr" element). If there is any it will execute that. Then it goes to tbody, table, body, html, document, window. In this stage its moving upward and this is called event bubbling or bubbling phase (phase-3). Please note that, you clicked on cell but all the event handler with parent elements will be fired. This is actually very powerful (check event delegation)  
 
 #### Event Bubbling
  When an event happens on an element, it first runs the handlers on it, then on its parent, then all the way up on other ancestors.
@@ -592,6 +592,16 @@ Because of this, we can use variables before we declare them. However, we have t
   hoist(); // Ouput: Hoisting is all the rage!
   ```
 
+## Is there any difference between window and document?
+Yes. JavaScript has a global object and everything runs under it. window is that global object that holds global variables, global functions, location, history everything is under it. Besides, setTimeout, ajax call (XMLHttpRequest), console or localStorage are part of window.
+
+document is also under window. document is a property of the window object. document represents the DOM and DOM is the object oriented representation of the html markup you have written. All the nodes are part of document. Hence you can use getElementById or addEventListener on document. These methods are not present in the window object.
+
+## How come, I can't use forEach or similar array methods on a NodeList? How could you solve this problem?
+Yeah. Both array and nodeList have length and you can loop through elements but they are not same object. Both are inherited from Object. However array has different prototype object than nodeList. forEach, map, etc are on array.prototype which doesn't exist in the NodeList.prototype object. Hence, you don't have forEach on a nodeList.
+
+To solve this problem, you can simply loop through a nodeList and do whatever you wanted to inside forEach or you can call method on array to convert nodelist to an array. After that you will have access to all array.prototype methods
+
 ## What's the difference between an "attribute" and a "property" of HTML?
 - Attributes are defined by HTML, all definitions inside HTML tag are attributes. The type of attributes is always string.
 
@@ -613,6 +623,18 @@ $('#test').prop('foo'); // read property using jQuery, return number: 1
 Some HTML attributes have 1:1 mapping onto properties. id is one example of such. Some do not (e.g. the value attribute specifies the initial value of an input, but the value property specifies the current value).
 
 It is recommended to use **property** in JavaScript as it's much easier and faster. Especially for boolean type attributes like: "checked", "disabled" and "selected", browser automatically converts them into boolean type properties.
+
+## What is HTML5 Web storage. Explain Local storage and Session storage.
+The two mechanisms within Web Storage are as follows:
+- `sessionStorage` maintains a separate storage area for each given origin that's available for the duration of the page session (as long as the browser is open, including page reloads and restores)
+- `localStorage` does the same thing, but persists even when the browser is closed and reopened.
+
+## Canvas VS SVG
+`Canvas` tag exposes a surface where you can create and manipulate rasterized images pixel by pixel using a JavaScript programmable interface.
+
+`SVG` is an XML file format designed to create vector graphics.
+
+`SVG` is a DOM approach to vector graphic (and consequently retained mode) whereas `Canvas` is a programmatic and immediate mode approach. `Canvas` is good at drawing a significant number of objects on a small surface, Pixel replacement in videos. While `SVG` is better on Scalability, Accessibility, and no reliance on JavaScript.
 
 ## Why is extending built-in JavaScript objects not a good idea?
 Same as other language, JS have built-in objects that create the essential functionality of language.  These objects provide some of the core functionality for working with text, numbers, collections of data, dates, and a whole lot more.
