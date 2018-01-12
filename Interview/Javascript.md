@@ -1055,6 +1055,17 @@ Promise.resolve().then(() => {
   console.log(newT);
 
   ```
+## Write a simple function to tell whether 2 is passed as parameter or not?
+arguments is a local variable, available inside all functions that provides a collection of all the arguments passed to the function. arguments is not an array rather an array like object. It has length but doesn't have the methods like forEach, indexOf, etc.
+```JavaScript
+function isTwoPassed(){
+  var args = Array.prototype.slice.call(arguments);
+  return args.indexOf(2) != -1;
+}
+
+isTwoPassed(1,4) //false
+isTowPassed(5,3,1,2) //true
+```
 
 ## What does the following code print?
 ```javascript
