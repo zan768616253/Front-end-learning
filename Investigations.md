@@ -4,7 +4,7 @@ Primary Javascript libraries.
  - [Why not suggest using `setState()` in `componentDidMount`](https://github.com/airbnb/javascript/issues/684)
 - [Refs and Dom](https://facebook.github.io/react/docs/refs-and-the-dom.html#adding-a-ref-to-a-class-component)
 - [value and defaultValue](https://github.com/facebook/react/issues/2764)
-
+- [Composition vs inheritance](https://reactjs.org/docs/composition-vs-inheritance.html), see why [Composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance)
 ## [Redux](http://redux.js.org/)
 - [Core Concepts](http://redux.js.org/docs/introduction/CoreConcepts.html#core-concepts)
 - Three Principles
@@ -12,6 +12,7 @@ Primary Javascript libraries.
   - State is read-only
   - Changes are made with pure functions
 - [redux-thunk](https://github.com/gaearon/redux-thunk)
+- [How should I split my logic between reducers and action creators? Where should my “business logic” go?](https://redux.js.org/docs/faq/CodeStructure.html#how-should-i-split-my-logic-between-reducers-and-action-creators-where-should-my-business-logic-go)
 - [Tests for Redux](http://redux.js.org/docs/recipes/WritingTests.html)
   - In order to be able to test the App component itself without having to deal with the decorator, we recommend you to also export the undecorated component:([Why?](https://github.com/reactjs/redux/issues/1534))
 
