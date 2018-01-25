@@ -244,7 +244,7 @@ because this function is defined with Normal function definition and not been ca
 ```
 
 ## What is a closure, and how/why would you use one?
-Closures are functions that refer to independent (free) variables (variables that are used locally, but defined in an enclosing scope). In other words, these functions 'remember' the environment in which they were created.
+Closure is a function that captures the state of the surrounding environment(variables that are used locally, but defined in an enclosing scope). In other words, a function has access to variables declared outside of its scope
 ```javascript
 function f1(){
   var n=999;
@@ -563,34 +563,49 @@ hoist = 'The variable has been hoisted.';
 ```
 Because of this, we can use variables before we declare them. However, we have to be careful because the hoisted variable is initialized with a value of undefined. The best option would be to declare and initialize our variable before use.
 
+One case where this is particularly likely to bite new JavaScript developers is when reusing variable names between an inner and outer scope. For example:
+
+```JavaScript
+var name = "Baggins";
+
+(function () {
+    // Outputs: "Original name was undefined"
+    console.log("Original name was " + name);
+
+    var name = "Underhill";
+
+    // Outputs: "New name is Underhill"
+    console.log("New name is " + name);
+})();
+```
+
 - #### Function Hoisting  
   As we mentioned before, all variable and function declarations are hoisted to the top of their scope. Since this is one of the eccentricities of how JavaScript handles variables, it is recommended to always declare variables regardless of whether they are in a function or global scope.
-  ``` javascript
-  function hoist() {
-    console.log(message);
-    var message='Hoisting is all the rage!'
-  }
-  hoist();
-  ```
-  this found should output `undefined`. The variable declaration, var message whose scope is the function hoist(), is hoisted to the top of the function.
+  ```javascript
+    // Outputs: "Yes!"
+  isItHoisted();
 
-  JavaScript engine interprets code as:
-  ``` javascript
-  function hoist() {
-    var message;
-    console.log(message);
-    message='Hoisting is all the rage!'
+  function isItHoisted() {
+      console.log("Yes!");
   }
-  hoist(); // Ouput: undefined
   ```
-  To avoid this pitfall, we would make sure to declare and initialise the variable before we use it:
-  ``` javascript
-  function hoist() {
-    message='Hoisting is all the rage!'
-    console.log(message);
+  However, **function definition hoisting only occurs for function declarations, not function expressions.** For example:
+  ```JavaScript
+  // Outputs: "Definition hoisted!"
+  definitionHoisted();
+
+  // TypeError: undefined is not a function
+  definitionNotHoisted();
+
+  function definitionHoisted() {
+      console.log("Definition hoisted!");
   }
-  hoist(); // Ouput: Hoisting is all the rage!
+
+  var definitionNotHoisted = function () {
+      console.log("Definition not hoisted!");
+  };
   ```
+
 
 ## Is there any difference between window and document?
 Yes. JavaScript has a global object and everything runs under it. window is that global object that holds global variables, global functions, location, history everything is under it. Besides, setTimeout, ajax call (XMLHttpRequest), console or localStorage are part of window.
@@ -778,7 +793,7 @@ console.log(arr2); // [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
 ## Why is it called a Ternary expression, what does the word "Ternary" indicate?
 It is frequently used as a shortcut for the if statement.
 
-** condition ? expr1 : expr2 **
+**condition ? expr1 : expr2**
 
 - condition  
 An expression that evaluates to true or false.  

@@ -39,7 +39,7 @@ Here the 2nd one will override the first one.
 2. The more specific rule will be considered. E.g. If there are two paragraph that's inside footer one with I'd value of copyright.
 
 ## How absolute, relative, fixed and static position differ?
-`absolute`, place an element exactly where you want to place it. absolute position is actually set relative to the element's parent. if no parent available then relatively place to the page itself.
+`absolute`, is positioned relative to the nearest positioned ancestor (instead of positioned relative to the viewport, like fixed). However; if an absolute positioned element has no positioned ancestors, it uses the document body.
 
 `relative`, is position an element relative to itself (from where the element would be placed, if u don't apply relative positioning). for example, if u set position relative to an element and set top: 10px, it will move 10px down from where it would be normally.
 

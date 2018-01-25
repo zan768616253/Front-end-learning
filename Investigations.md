@@ -2,7 +2,9 @@
 Primary Javascript libraries.
 - [Lifecycle](https://facebook.github.io/react/docs/react-component.html#the-component-lifecycle)
  - [Why not suggest using `setState()` in `componentDidMount`](https://github.com/airbnb/javascript/issues/684)
+- [PureComponent](): changes the life-cycle method `shouldComponentUpdate` and adds some logic to automatically check whether a re-render is required for the component. This allows a PureComponent to call method `render` only if it detects changes in `state` or `props`. It should be used carefully, as the PureComponent does shallow comparison, changes **inside** `props` or `state` will be ignored.
 - [Refs and Dom](https://facebook.github.io/react/docs/refs-and-the-dom.html#adding-a-ref-to-a-class-component)
+- Server side rendering
 - [value and defaultValue](https://github.com/facebook/react/issues/2764)
 - [Composition vs inheritance](https://reactjs.org/docs/composition-vs-inheritance.html), see why [Composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance)
 ## [Redux](http://redux.js.org/)

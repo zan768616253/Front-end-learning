@@ -11,6 +11,8 @@ By contrast, React focuses exclusively on the creation of components, and has fe
 
 [React vs Vue](https://www.codementor.io/vuejsdevelopers/react-or-vue-which-javascript-ui-library-should-you-be-using-6hri3num4)
 
+[React vs Angular vs Vue](https://medium.com/unicorn-supplies/angular-vs-react-vs-vue-a-2017-comparison-c5c52d620176)
+
 ## What happens during the lifecycle of a React component?
 - High-Level Component Lifecycle
 
@@ -90,12 +92,6 @@ ReactDOM.render(
 );
 ```
 This component has no need for any internal state — let alone a constructor or lifecycle handlers. The output of the component is purely a function of the properties provided to it.
-
-## What are the features of React?
-Major features of React are listed below:
-- It uses the virtual DOM instead of the real DOM.
-- It uses server-side rendering.
-- It follows uni-directional data flow or data binding.
 
 ## List some of the major advantages of React.
 Some of the major advantages of React are:
